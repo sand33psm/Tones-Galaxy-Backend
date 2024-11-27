@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from .serializers import RegisterSerializer
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -11,10 +11,31 @@ from django.contrib.auth import authenticate
 from .serializers import RegisterSerializer, ProfileSerializer
 from rest_framework import viewsets, permissions
 from .models import Profile
+from django.db import IntegrityError
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # Use the serializer to validate the data
+            serializer = self.get_serializer(data=request.data)
+            if serializer.is_valid():
+                # Create the user using the validated data
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+            # If validation fails, return the errors with a 400 response
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        except IntegrityError as e:
+            # Handle database integrity errors (e.g., duplicate username/email)
+            return Response({"error": "A user with this username or email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except Exception as e:
+            # Catch any unexpected errors and return a generic error message
+            return Response({"error": "An unexpected error occurred. Please try again."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
