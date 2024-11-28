@@ -44,3 +44,41 @@ class RingtoneViewSet(viewsets.ModelViewSet):
             return Response({'message': message, 'total_likes': ringtone.total_likes()}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Authentication is required to like a ringtone.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def liked_by_user(self, request):
+        """
+        Returns the list of ringtones liked by the authenticated user.
+        """
+        user = request.user
+        liked_ringtones = Ringtone.objects.filter(likes=user)
+        serializer = RingtoneSerializer(liked_ringtones, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def upload(self, request):
+        """
+        Handle ringtone upload
+        """
+        file = request.FILES.get('file')
+        name = request.data.get('name')
+        genre = request.data.get('genre')
+        description = request.data.get('description')
+        tags = request.data.get('tags')
+
+        if not file:
+            return Response({"error": "No file provided."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not name or not genre:
+            return Response({"error": "Name and genre are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        ringtone = Ringtone.objects.create(
+            user=request.user,
+            name=name,
+            file=file,
+            description=description,
+            genre=genre,
+            tags=tags
+        )
+        serializer = RingtoneSerializer(ringtone)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
