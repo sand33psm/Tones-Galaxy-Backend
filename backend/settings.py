@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'users',
     'ringtones',
     'corsheaders',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
