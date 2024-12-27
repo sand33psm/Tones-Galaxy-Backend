@@ -10,6 +10,14 @@ class Ringtone(models.Model):
         ('jazz', 'Jazz'),
         ('classical', 'Classical'),
         ('electronic', 'Electronic'),
+        ('instrumental', 'Instrumental'),
+        ('bgm', 'Bgm'),
+        ('remix', 'Remix'),
+        ('slowed', 'Slowed'),
+        ('lofi', 'Lofi'),
+        ('indie', 'Indie'),
+        ('k-pop', 'K-pop'),
+        ('rnb', 'Rnb'),
         ('others', 'Others'),
     ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
