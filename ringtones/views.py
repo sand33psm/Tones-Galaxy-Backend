@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 class RingtoneViewSet(viewsets.ModelViewSet):
-    queryset = Ringtone.objects.all()
+    queryset = Ringtone.objects.all().order_by('-created_at') 
     serializer_class = RingtoneSerializer
     permission_classes = [IsOwnerOrReadOnly]
 

@@ -29,6 +29,7 @@ class Ringtone(models.Model):
     tags = models.CharField(max_length=255, blank=True)  # Comma-separated tags
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_ringtones', blank=True)
     date_uploaded = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
