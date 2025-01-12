@@ -7,11 +7,16 @@ from django.http import FileResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
+
+class RingtonePagination(PageNumberPagination):
+    page_size = 10
 
 class RingtoneViewSet(viewsets.ModelViewSet):
     queryset = Ringtone.objects.all().order_by('-created_at') 
     serializer_class = RingtoneSerializer
     permission_classes = [IsOwnerOrReadOnly]
+    pagination_class = RingtonePagination
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)  # Set the current user as the uploader
